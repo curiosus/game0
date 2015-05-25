@@ -31,22 +31,28 @@ constexpr int windowHeight{900};
 //TODO Turn this into a class when I learn classes in my uhhh...class. Actually it's a book or two.
 constexpr float strikerWidth{60.f}; 
 constexpr float strikerHeight{20.f};
+constexpr float strikerVelocity{6.f};
 struct Striker {
 
   RectangleShape shape;
-  Vector2f coordinates;
+  Vector2f velocity;
 
   Striker () {
-    shape.setPosition(10.f, 10.f);
+    shape.setPosition(windowWidth / 2.f, windowHeight - strikerHeight);
     shape.setSize({strikerWidth, strikerHeight});
-    shape.setFillColor(Color::Blue);
+    shape.setFillColor(Color::Red);
     shape.setOrigin(strikerWidth / 2.f, strikerHeight / 2.f);
   }
 
   void update() {
+    if (Keyboard::isKeyPressed(Keyboard::Key::A)) {
+      velocity.x = -strikerVelocity; 
+    } else if (Keyboard::isKeyPressed(Keyboard::Key::D)) {
+      velocity.x = strikerVelocity;  
+    }
+    shape.move(velocity);
     
   }
-  
   
 };
 
@@ -66,6 +72,10 @@ int main() {
         break;
       }
     }
+
+    striker.update();
+    
+    window.draw(striker.shape);
     
     window.display();
 
