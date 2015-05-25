@@ -7,6 +7,7 @@
 http://curiosus.me
 jepeterson@gmail.com
 2015-05-24-14:04MDT
+game0
 */
 
 using std::vector;
@@ -140,6 +141,47 @@ struct Ball {
       
 };
 
+constexpr float targetWidth{60.f};
+constexpr float targetHeight{20.f};
+struct Target {
+  RectangleShape shape;
+  bool destroyed{false};
+  
+  Target(float x, float y) {
+    cout << x << ", " << y << endl;
+    shape.setPosition(x, y);
+    shape.setSize({targetWidth, targetHeight});
+    shape.setFillColor(Color::Green);
+    shape.setOrigin(targetWidth / 2.f, targetHeight / 2.f);
+  }
+
+
+  float x() {
+    return shape.getPosition().x;
+  }
+
+  float y() {
+    return shape.getPosition().y;
+  }
+
+  float left() {
+    return x() - shape.getSize().x / 2.f;
+  }
+
+  float right() {
+    return x() + shape.getSize().x / 2.f;
+  }
+
+  float top() {
+    return y() - shape.getSize().y / 2;
+  }
+
+  float bottom() {
+    return y() + shape.getSize().y / 2.f;  
+  }
+
+};
+
 template<class T1, class T2> bool isIntersection(T1& p1, T2& p2) {
   return p1.right() >= p2.left() && p1.left() <= p2.right()
          && p1.bottom() >= p2.top() && p1.top() <= p2.bottom(); 
@@ -158,11 +200,18 @@ void collision(Striker& striker, Ball& ball) {
 
 int main() {
 
-  RenderWindow window{{windowWidth, windowHeight}, "game0"};
-  window.setFramerateLimit(fps);
-
   Striker striker;
   Ball ball;
+  vector<Target> targets;
+  for (int i{0}; i < 3; i++ ) {
+    for (int j{0}; j < 16; j++) {
+      targets.emplace_back((j+1) * (targetWidth + 5), (i+1) * (targetHeight + 5));
+    }
+  }
+  cout << targets.size() << endl;
+
+  RenderWindow window{{windowWidth, windowHeight}, "game0"};
+  window.setFramerateLimit(fps);
 
   while (window.isOpen()) {
     window.clear(Color::Black);
@@ -179,6 +228,9 @@ int main() {
     collision(striker, ball); 
     window.draw(striker.shape);
     window.draw(ball.shape); 
+    for (Target& target : targets) {
+      window.draw(target.shape);
+    }
     window.display();
 
   }
