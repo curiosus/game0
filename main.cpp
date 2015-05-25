@@ -45,14 +45,25 @@ struct Striker {
   }
 
   void update() {
-    if (Keyboard::isKeyPressed(Keyboard::Key::A)) {
+    if (Keyboard::isKeyPressed(Keyboard::Key::A) && left() > 0) {
       velocity.x = -strikerVelocity; 
-    } else if (Keyboard::isKeyPressed(Keyboard::Key::D)) {
+    } else if (Keyboard::isKeyPressed(Keyboard::Key::D) && right() < windowWidth) {
       velocity.x = strikerVelocity;  
+    } else {
+      velocity.x = 0;
     }
     shape.move(velocity);
     
   }
+
+  float left() {
+    return shape.getPosition().x - shape.getSize().x / 2.f;
+  }
+
+  float right() {
+    return shape.getPosition().x + shape.getSize().x / 2.f;
+  }
+
   
 };
 
