@@ -63,8 +63,55 @@ struct Striker {
   float right() {
     return shape.getPosition().x + shape.getSize().x / 2.f;
   }
-
   
+};
+
+constexpr float ballRadius{12.f};
+constexpr float ballVelocity{6.f};
+struct Ball {
+
+  CircleShape shape;  
+  Vector2f velocity{-ballVelocity, -ballVelocity};
+  
+  Ball() {
+    shape.setPosition(windowWidth / 2, windowHeight / 2);
+    shape.setRadius(ballRadius);
+    shape.setFillColor(Color::Yellow);
+    shape.setOrigin(ballRadius, ballRadius);
+  }
+
+  void update() {
+    shape.move(velocity);
+
+    if (left() < 0) {
+      velocity.x = ballVelocity;
+    } else if (right() > windowWidth) {
+      velocity.x = -ballVelocity;
+    }
+    
+    if (top() < 0) {
+      velocity.y = ballVelocity;
+    } else if (bottom() > windowHeight) {
+      velocity.y = -ballVelocity;
+    }
+  }
+
+  float left() {
+    return shape.getPosition().x - shape.getRadius(); 
+  }
+
+  float right() {
+    return shape.getPosition().x + shape.getRadius();
+  }
+
+  float top() {
+    return shape.getPosition().y - shape.getRadius();
+  }
+
+  float bottom() {
+    return shape.getPosition().y + shape.getRadius();
+  }
+      
 };
 
 int main() {
@@ -73,6 +120,7 @@ int main() {
   window.setFramerateLimit(fps);
 
   Striker striker;
+  Ball ball;
 
   while (window.isOpen()) {
     window.clear(Color::Black);
@@ -84,10 +132,11 @@ int main() {
       }
     }
 
+    ball.update();
     striker.update();
     
     window.draw(striker.shape);
-    
+    window.draw(ball.shape); 
     window.display();
 
   }
