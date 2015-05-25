@@ -56,16 +56,34 @@ struct Striker {
     
   }
 
+  float x() {
+    return shape.getPosition().x;
+  }
+
+  float y() {
+    return shape.getPosition().y;
+  }
+
   float left() {
-    return shape.getPosition().x - shape.getSize().x / 2.f;
+    return x() - shape.getSize().x / 2.f;
   }
 
   float right() {
-    return shape.getPosition().x + shape.getSize().x / 2.f;
+    return x() + shape.getSize().x / 2.f;
+  }
+
+  float top() {
+    return y() - shape.getSize().y / 2.f;
+  }
+
+  float bottom() {
+    return y() + shape.getSize().y / 2.f;
   }
   
 };
 
+//Ball Class
+//Ball that bounces around and is struck by the Striker
 constexpr float ballRadius{12.f};
 constexpr float ballVelocity{6.f};
 struct Ball {
@@ -96,23 +114,47 @@ struct Ball {
     }
   }
 
+  float x() {
+    return shape.getPosition().x;
+  }
+
+  float y() {
+    return shape.getPosition().y;
+  }
+
   float left() {
-    return shape.getPosition().x - shape.getRadius(); 
+    return x() - shape.getRadius(); 
   }
 
   float right() {
-    return shape.getPosition().x + shape.getRadius();
+    return x() + shape.getRadius();
   }
 
   float top() {
-    return shape.getPosition().y - shape.getRadius();
+    return y() - shape.getRadius();
   }
 
   float bottom() {
-    return shape.getPosition().y + shape.getRadius();
+    return y() + shape.getRadius();
   }
       
 };
+
+template<class T1, class T2> bool isIntersection(T1& p1, T2& p2) {
+  return p1.right() >= p2.left() && p1.left() <= p2.right()
+         && p1.bottom() >= p2.top() && p1.top() <= p2.bottom(); 
+}
+
+void collision(Striker& striker, Ball& ball) {
+  if (isIntersection(striker, ball)) {
+    ball.velocity.y = -ballVelocity;
+    if (ball.x() < striker.x()) {
+      ball.velocity.x = -ballVelocity;
+    } else {
+      ball.velocity.x = ballVelocity;
+    }
+  } 
+}
 
 int main() {
 
@@ -134,7 +176,7 @@ int main() {
 
     ball.update();
     striker.update();
-    
+    collision(striker, ball); 
     window.draw(striker.shape);
     window.draw(ball.shape); 
     window.display();
