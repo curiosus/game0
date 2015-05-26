@@ -141,6 +141,8 @@ struct Ball {
       
 };
 
+//Target class
+//These form the wall of targets to be hit with the ball
 constexpr float targetWidth{60.f};
 constexpr float targetHeight{20.f};
 struct Target {
@@ -198,6 +200,31 @@ void collision(Striker& striker, Ball& ball) {
   } 
 }
 
+void collision(Ball& ball, Target& target) {
+  if (isIntersection(ball, target)) {
+
+    target.destroyed = true;
+
+    float intersectLeft{ball.right() - target.left()};
+    float intersectRight{target.right() - ball.left()};
+    float intersectTop{ball.bottom() - target.top()};
+    float intersectBottom{target.bottom() - ball.top()};
+
+    bool ballHitOnLeft{abs(intersectLeft) < abs(intersectRight)};
+    bool ballHitFromTop{(abs(intersectTop) < abs(intersectBottom))}; 
+
+    float intersectX{ballHitOnLeft ? intersectLeft : intersectRight};
+    float intersectY{ballHitFromTop ? intersectTop : intersectBottom};
+
+    if (abs(intersectX) < abs(intersectY)){
+      ball.velocity.x = ballHitOnLeft ? -ballVelocity : ballVelocity;
+    } else {
+      ball.velocity.y = ballHitFromTop ? - ballVelocity : ballVelocity;
+    }
+    
+  }
+}
+
 int main() {
 
   Striker striker;
@@ -229,7 +256,10 @@ int main() {
     window.draw(striker.shape);
     window.draw(ball.shape); 
     for (Target& target : targets) {
-      window.draw(target.shape);
+      if (!target.destroyed) {
+        collision(ball, target);
+        window.draw(target.shape);
+      }
     }
     window.display();
 
